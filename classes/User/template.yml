@@ -1,4 +1,6 @@
-init: index.init
+init: 
+  handler: index.init
+  inputModel: UserInitInputModel
 getState: index.getState
 getInstanceId: index.getInstanceId
 methods:

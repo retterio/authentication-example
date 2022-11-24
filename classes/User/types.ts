@@ -5,4 +5,10 @@ export const privateState = z.object({
     userId: z.string()
 })
 
+export const userInitModel = z.object({
+    email: z.string().email()
+})
+
+
 export type PrivateState = z.infer<typeof privateState>
+export type UserInitModel = z.infer<typeof userInitModel>

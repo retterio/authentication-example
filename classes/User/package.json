@@ -1,6 +1,9 @@
 {
   "name": "user",
   "version": "1.0.0",
+  "scripts": {
+    "export-models": "ts-node scripts/export-models.ts"
+  },
   "dependencies": {
     "@retter/rdk": "1.1.15",
     "uuid": "9.0.0",

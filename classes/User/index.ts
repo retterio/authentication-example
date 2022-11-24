@@ -1,6 +1,7 @@
 import RDK, { Data, InitResponse, Response, StepResponse } from "@retter/rdk";
 import { v4 as uuidv4 } from 'uuid';
-import { PrivateState } from "./types";
+import { UserInitInputModel } from "./rio";
+import { PrivateState, UserInitModel } from "./types";
 
 const rdk = new RDK();
 
@@ -15,7 +16,7 @@ export async function authorizer(data: Data): Promise<Response> {
 }
 
 export async function init(data: Data): Promise<Data> {
-    const { email } = data.request.body
+    const { email } = data.request.body as UserInitModel
     data.state.private = {
         email,
         userId: data.context.instanceId

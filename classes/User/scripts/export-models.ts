@@ -2,6 +2,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema'
 import fs from 'fs'
 import path from 'path'
 import { ZodType } from 'zod'
+import { userInitModel } from '../types'
 
 
 const modelExporter = (t: ZodType<any>, name: string) => {
@@ -9,4 +10,4 @@ const modelExporter = (t: ZodType<any>, name: string) => {
   fs.writeFileSync(path.join(__dirname, '..', '..', '..', 'models', `${name}.json`), JSON.stringify(r.definitions[name], null, 4))
 }
 
-// modelExporter(initInputModel, 'AuthInitInputModel')
+modelExporter(userInitModel, 'UserInitInputModel')
