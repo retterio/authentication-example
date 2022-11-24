@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@retter/rdk": "1.1.15",
-    "node-mailjet": "^5.1.1",
+    "node-mailjet": "5.1.1",
     "zod": "3.19.1"
   },
   "devDependencies": {
