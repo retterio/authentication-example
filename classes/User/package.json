@@ -1,0 +1,12 @@
+{
+  "name": "user",
+  "version": "1.0.0",
+  "dependencies": {
+    "@retter/rdk": "1.1.15",
+    "uuid": "9.0.0",
+    "zod": "3.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9"
+  }
+}

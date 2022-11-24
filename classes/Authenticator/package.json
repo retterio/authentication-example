@@ -1,0 +1,15 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "scripts": {
+    "export-models": "ts-node scripts/export-models.ts"
+  },
+  "dependencies": {
+    "@retter/rdk": "1.1.15",
+    "postmark": "^3.0.14",
+    "zod": "3.19.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.9"
+  }
+}

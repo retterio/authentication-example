@@ -1,0 +1,10 @@
+init: 
+  handler: index.init
+  inputModel: AuthInitInputModel
+getState: index.getState
+methods:
+  - method: login
+    type: READ
+    inputModel: LoginModel
+    handler: index.login
+
