@@ -1,21 +1,37 @@
 import RDK, { Data, InitResponse, Response, StepResponse } from "@retter/rdk";
 import { InitInputModel, Login, PrivateState } from "./types";
-var postmark = require('postmark')
+import mailjet from 'node-mailjet'
+
+const mailjetClient = new mailjet({
+    apiKey: '38bd8fe043c129615d3f7146398a6a0b',
+    apiSecret: '0a168db997b4d139500b3ca5b1ba4a2c'
+});
 
 const rdk = new RDK();
 
-const client = new postmark.ServerClient("2566b989-fd65-4ff1-b056-4d3ad509a624");
-
 const sendOtpMail = async (email: string, otp: number): Promise<boolean> => {
     try {
-        await client.sendEmail({
-            "From": "bahadir@rettermobile.com",
-            "To": `${email}`,
-            "Subject": "Hello from Postmark",
-            "HtmlBody": `OTP: ${otp}`,
-            "TextBody": "Hello from Postmark!",
-            "MessageStream": "oto"
-        });
+        await mailjetClient
+            .post("send", { 'version': 'v3.1' })
+            .request({
+                "Messages": [
+                    {
+                        "From": {
+                            "Email": "bahadir@rettermobile.com",
+                            "Name": "Bahadır"
+                        },
+                        "To": [
+                            {
+                                "Email": email
+                            }
+                        ],
+                        "Subject": "Greetings from Retter.",
+                        "TextPart": "OTP Validation Email",
+                        "HTMLPart": `OTP: ${otp}`,
+                        "CustomID": "AppGettingStartedTest"
+                    }
+                ]
+            })
         return true
     } catch (error) {
         console.log(error)
