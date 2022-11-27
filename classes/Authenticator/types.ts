@@ -13,7 +13,6 @@ export const privateState = z.object({
     otp: z.number()
 })
 
-
 export type InitInputModel = z.infer<typeof initInputModel>
 export type Login = z.infer<typeof loginModel>
 export type PrivateState = z.infer<typeof privateState>

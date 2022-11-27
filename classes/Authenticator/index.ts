@@ -9,8 +9,47 @@ const mailjetClient = new mailjet({
 
 const rdk = new RDK();
 
-const sendOtpMail = async (email: string, otp: number): Promise<boolean> => {
+//*******************************/
+
+export async function authorizer(data: Data): Promise<Response> {
+    const { methodName, identity, instanceId, action } = data.context
+
+    switch (methodName) {  
+        case 'INIT':
+        case 'GET': {
+            return { statusCode: 200 }
+        }
+
+        case 'STATE': {
+            if (identity === 'developer') return { statusCode: 200 }
+        }
+
+        case 'login':
+        case 'sendOTP': {
+            if (instanceId && action === 'CALL') return { statusCode: 200 }
+        }
+    }
+
+    return { statusCode: 403 };
+}
+
+export async function init(data: Data): Promise<Data> {
+    data.state.private.email = data.request.body.email
+    return data
+}
+
+export async function getState(data: Data): Promise<Response> {
+    return { statusCode: 200, body: data.state };
+}
+
+export async function getInstanceId(data: Data): Promise<string> {
+    return data.request.body.email
+}
+
+export async function sendOTP(data: Data): Promise<Data> {
     try {
+        const { email } = data.state.private
+        const otp = Math.floor(100000 + Math.random() * 900000)
         await mailjetClient
             .post("send", { 'version': 'v3.1' })
             .request({
@@ -32,41 +71,19 @@ const sendOtpMail = async (email: string, otp: number): Promise<boolean> => {
                     }
                 ]
             })
-        return true
+        data.state.private.otp = otp
+        data.response = {
+            statusCode: 200,
+            body: { emailSent: true },
+        }
     } catch (error) {
         console.log(error)
-        return false
+        data.response = {
+            statusCode: 400,
+            body: { error: error.message },
+        };
     }
-}
-
-//*******************************/
-
-export async function authorizer(data: Data): Promise<Response> {
-    const { methodName } = data.context
-    if(methodName === "login") {
-        return {statusCode: 200}
-    }
-    if(methodName === "init") {
-        return {statusCode: 200}
-    }
-    return { statusCode: 403 };
-}
-
-export async function init(data: Data): Promise<Data> {
-    const { email } = data.request.body as InitInputModel
-    const otp = Math.floor(100000 + Math.random() * 900000)
-    const response = await sendOtpMail(email, otp)
-    if (response === false) throw new Error(`There was an error when sending otp email.`);
-
-    data.state.private = {
-        email,
-        otp
-    } as PrivateState
     return data
-}
-
-export async function getState(data: Data): Promise<Response> {
-    return { statusCode: 200, body: data.state };
 }
 
 export async function login(data: Data): Promise<Data> {
@@ -76,6 +93,7 @@ export async function login(data: Data): Promise<Data> {
 
         if (recivedOtp !== otp) throw new Error(`OTP is wrong`);
 
+        // Get existing USER INSTANCE
         let getUser = await rdk.getInstance({
             classId: "User",
             body: {
@@ -87,14 +105,16 @@ export async function login(data: Data): Promise<Data> {
             }
         })
 
-        if (getUser.statusCode === 404) {
-            // User class will connect email as lookup key itself
+        if (getUser.statusCode > 299) {
+            // CREATE USER INSTANCE -> User class will connect email as lookup key itself
             getUser = await rdk.getInstance({
                 classId: "User",
                 body: {
                     email
                 }
             })
+
+            if (getUser.statusCode > 299) throw new Error('Couldnt create user instance')
         }
 
         const customToken = await rdk.generateCustomToken({
@@ -102,9 +122,11 @@ export async function login(data: Data): Promise<Data> {
             identity: 'enduser'
         })
 
+        data.state.private.relatedUser = getUser.body.instanceId
+        data.state.private.otp = undefined
         data.response = {
             statusCode: 200,
-            body: { message: customToken },
+            body: customToken,
         };
 
     } catch (error) {

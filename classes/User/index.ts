@@ -9,6 +9,9 @@ const rdk = new RDK();
 
 export async function authorizer(data: Data): Promise<Response> {
     const { identity, methodName,instanceId, userId } = data.context
+    if (identity === "developer" && methodName === "getState") {
+        return { statusCode: 200 };
+    }
     if (identity === "enduser" && methodName === "getProfile" && userId === instanceId) {
         return { statusCode: 200 };
     }

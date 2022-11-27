@@ -1,10 +1,15 @@
 init: 
   handler: index.init
   inputModel: AuthInitInputModel
+getInstanceId: index.getInstanceId
 getState: index.getState
 methods:
   - method: login
-    type: READ
+    type: WRITE
     inputModel: LoginModel
     handler: index.login
+  - method: sendOTP
+    type: WRITE
+    handler: index.sendOTP
+
 
