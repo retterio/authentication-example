@@ -13,4 +13,3 @@ methods:
     type: WRITE
     handler: index.sendOTP
 
-
