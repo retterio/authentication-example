@@ -8,6 +8,7 @@ methods:
     type: WRITE
     inputModel: LoginModel
     handler: index.login
+    
   - method: sendOTP
     type: WRITE
     handler: index.sendOTP
